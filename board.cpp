@@ -12,11 +12,13 @@
 #include "bpawn.h"
 #include "knight.h"
 #include "empty.h"
+#include "moverequest.h"
 
 void Board::display() {
-    for (int i = 7; i >= 0; i--) {
-        for (int j = 7; j >= 0; j--) {
-            std::cout << board[j][i]->name << " ";
+    std::cout << std::endl << std::endl;
+    for (int rank = 7; rank >= 0; rank--) {
+        for (int file = 0; file < 8; file++) {
+            std::cout << board[file][rank]->name << " ";
         }
         std::cout << std::endl;
     }
@@ -28,6 +30,42 @@ sf::Vector2u Board::to_program_coords(char file, int rank) {
 
 std::string Board::to_chess_coords(sf::Vector2u input) {
     return (char(input.x + 97) + std::to_string(input.y + 1));
+}
+
+std::string Board::piece_colour(sf::Vector2u square) {
+    return board[square.x][square.y]->getColour();
+}
+
+bool Board::request_move(MoveRequest move) {
+    sf::Vector2u origin = move.origin;
+    std::vector<sf::Vector2u> moves = 
+        board[origin.x][origin.y]->gen_moves(*this, origin);
+
+    std::cout << "list of all legal moves for piece:" << std::endl;
+    for (int i = 0; i != moves.size(); i++) {
+        std::cout << to_chess_coords(moves[i]) << std::endl;
+    }
+
+    if (std::find(moves.begin(), moves.end(), move.destination) !=
+    moves.end()) {
+        return true;
+    }
+    
+    else {
+        return false;
+    }
+}
+
+void Board::make_move(MoveRequest move) {
+    sf::Vector2u origin = move.origin;
+    sf::Vector2u dest = move.destination;
+
+    std::swap(board[origin.x][origin.y], board[dest.x][dest.y]);
+
+    if (piece_colour(origin) != piece_colour(dest)) {
+        delete board[origin.x][origin.y];
+        board[origin.x][origin.y] = new Empty();
+    }
 }
 
 void Board::setup() {

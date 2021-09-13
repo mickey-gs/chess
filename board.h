@@ -12,6 +12,7 @@ class WPawn;
 class MoveRequest;
 
 #include <SFML/Graphics.hpp>
+#include <algorithm>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -24,6 +25,7 @@ class Board {
     void setup();
     bool request_move(MoveRequest move);
     void make_move(MoveRequest move);
+    std::string piece_colour(sf::Vector2u square);
 
     private:
     std::vector<std::vector<Piece*> > board;

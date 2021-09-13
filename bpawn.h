@@ -7,7 +7,7 @@
 class BPawn: public Piece {
     public:
     BPawn();
-    std::vector<sf::Vector2u> gen_moves(Board board);
+    std::vector<sf::Vector2u> gen_moves(Board board, sf::Vector2u pos);
 };
 
 #endif

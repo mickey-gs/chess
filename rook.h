@@ -7,7 +7,7 @@
 class Rook: public Piece {
     public:
     Rook(std::string col);
-    std::vector<sf::Vector2u> gen_moves(Board board);
+    std::vector<sf::Vector2u> gen_moves(Board board, sf::Vector2u pos);
 };
 
 #endif

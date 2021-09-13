@@ -1,10 +1,19 @@
 #include "piece.h"
+#include "board.h"
 #include <string>
 #include <SFML/Graphics.hpp>
 
 Piece::Piece() {
     colour = 'a';
     name = "";
+}
+
+std::vector<sf::Vector2u> Piece::gen_moves() {
+    
+}
+
+std::vector<sf::Vector2u> Piece::gen_moves(Board board, sf::Vector2u pos) {
+    std::cout << "This shouldn't be called." << std::endl;
 }
 
 Piece::Piece(int rank, int file) {
