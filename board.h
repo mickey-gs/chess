@@ -25,7 +25,9 @@ class Board {
     void setup();
     bool request_move(MoveRequest move);
     void make_move(MoveRequest move);
+    char promotion_prompt();
     std::string piece_colour(sf::Vector2u square);
+    sf::Vector2u en_passant_sq;
 
     private:
     std::vector<std::vector<Piece*> > board;

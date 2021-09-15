@@ -19,12 +19,14 @@ std::vector<sf::Vector2u> BPawn::gen_moves(Board board, sf::Vector2u pos) {
         }
 
         if (pos.x < 7 &&
-            board.piece_colour(sf::Vector2u(pos.x + 1, pos.y - 1)) == "b") {
+            (board.piece_colour(sf::Vector2u(pos.x + 1, pos.y - 1)) == "w"
+            || board.en_passant_sq == sf::Vector2u(pos.x+1, pos.y-1))) {
             moves.push_back(sf::Vector2u(pos.x + 1, pos.y - 1));
         }
 
         if (pos.x > 0 && 
-            board.piece_colour(sf::Vector2u(pos.x - 1, pos.y - 1)) == "b") {
+            (board.piece_colour(sf::Vector2u(pos.x - 1, pos.y - 1)) == "w"
+            || board.en_passant_sq == sf::Vector2u(pos.x-1, pos.y-1))) {
             moves.push_back(sf::Vector2u(pos.x - 1, pos.y - 1));
         }
     }

@@ -36,6 +36,19 @@ std::string Board::piece_colour(sf::Vector2u square) {
     return board[square.x][square.y]->getColour();
 }
 
+char Board::promotion_prompt() {
+    std::cout
+    << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl
+    << "What do you want to promote to? (q/r/b/n) ";
+    char response;
+    std::cin >> response;
+    std::cout 
+    << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+    << std::endl;
+
+    return response;
+}
+
 bool Board::request_move(MoveRequest move) {
     sf::Vector2u origin = move.origin;
     std::vector<sf::Vector2u> moves = 
@@ -60,11 +73,91 @@ void Board::make_move(MoveRequest move) {
     sf::Vector2u origin = move.origin;
     sf::Vector2u dest = move.destination;
 
+    if (board[origin.x][origin.y]->name == "wp"
+    && (dest.y - origin.y == 2)) {
+        en_passant_sq = sf::Vector2u(dest.x, dest.y - 1);
+    }
+    if (board[origin.x][origin.y]->name == "bp"
+    && (origin.y - dest.y == 2)) {
+        en_passant_sq = sf::Vector2u(dest.x, dest.y + 1);
+    }
+
     std::swap(board[origin.x][origin.y], board[dest.x][dest.y]);
+
+    if (board[dest.x][dest.y]->name[1] == 'p'
+    && dest.x - origin.x != 0
+    && board[origin.x][origin.y]->getColour() == "none") {
+        if (board[dest.x][dest.y]->name == "wp") {
+            delete board[dest.x][dest.y-1];
+            board[dest.x][dest.y-1] = new Empty();
+        }
+        else {
+            delete board[dest.x][dest.y+1];
+            board[dest.x][dest.y+1] = new Empty();
+        }
+    }
 
     if (piece_colour(origin) != piece_colour(dest)) {
         delete board[origin.x][origin.y];
         board[origin.x][origin.y] = new Empty();
+    }
+
+    if (board[dest.x][dest.y]->name != "wp"
+    && board[dest.x][dest.y]->name != "bp") {
+        en_passant_sq = sf::Vector2u(10, 10);
+    }
+
+    for (int file = 0; file != 8; file++) {
+        if (board[file][7]->name == "wp"
+        || board[file][0]->name == "bp") {
+            char piece = promotion_prompt();
+
+            switch (piece) {
+                case 'q':
+                if (board[file][7]->name == "wp") {
+                    delete board[file][7];
+                    board[file][7] = new Queen("w");
+                }
+                else {
+                    delete board[file][0];
+                    board[file][0] = new Queen("b");
+                }
+                break;
+
+                case 'r':
+                if (board[file][7]->name == "wp") {
+                    delete board[file][7];
+                    board[file][7] = new Rook("w");
+                }
+                else {
+                    delete board[file][0];
+                    board[file][0] = new Rook("b");
+                }
+                break;
+
+                case 'b':
+                if (board[file][7]->name == "wp") {
+                    delete board[file][7];
+                    board[file][7] = new Bishop("w");
+                }
+                else {
+                    delete board[file][0];
+                    board[file][0] = new Bishop("b");
+                }
+                break;
+
+                case 'n':
+                if (board[file][7]->name == "wp") {
+                    delete board[file][7];
+                    board[file][7] = new Knight("w");
+                }
+                else {
+                    delete board[file][0];
+                    board[file][0] = new Knight("b");
+                }
+                break;
+            }
+        }
     }
 }
 
