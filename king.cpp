@@ -50,5 +50,38 @@ std::vector<sf::Vector2u> King::gen_moves(Board board, sf::Vector2u pos) {
         }
     }
 
+    if (pos.x == 4) {
+        cursor = pos;
+        cursor.x++;
+        if (board.castling_rights[colour + "K"]) {
+            bool flag = true;
+            while (cursor.x < 6) {
+                if (board.piece_colour(sf::Vector2u(cursor.x, cursor.y)) != "none") {
+                    flag = false;
+                    break;
+                }
+                cursor.x++;
+            }
+            if (flag) {
+                moves.push_back(sf::Vector2u(pos.x + 2, pos.y));
+            }
+        }
+        cursor = pos;
+        cursor.x--;
+        if (board.castling_rights[colour + "Q"]) {
+            bool flag = true;
+            while (cursor.x > 1) {
+                if (board.piece_colour(sf::Vector2u(cursor.x, cursor.y)) != "none") {
+                    flag = false;
+                    break;
+                }
+                cursor.x--;
+            }
+            if (flag) {
+                moves.push_back(sf::Vector2u(pos.x - 2, pos.y));
+            }
+        }
+    }
+
     return moves;
 }

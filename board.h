@@ -30,13 +30,13 @@ class Board {
     bool in_check();
     std::string piece_colour(sf::Vector2u square);
     sf::Vector2u en_passant_sq;
+    std::map<std::string, bool> castling_rights;
 
     private:
     std::vector<std::vector<Piece*> > board;
     char turn;
     void save_to_strings(std::vector<std::vector<std::string> > &strings);
     void revert_from_strings(std::vector<std::vector<std::string> > &strings);
-    std::map<std::string, bool> castling_rights;
     void make_fake_move(MoveRequest move);
 };
 

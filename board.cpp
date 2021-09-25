@@ -243,6 +243,16 @@ void Board::make_move(MoveRequest move) {
         en_passant_sq = sf::Vector2u(10, 10);
     }
 
+    if ((dest.x - origin.x > 1 || dest.x - origin.x > 1) && 
+    board[dest.x][dest.y]->name[1] == 'K') {
+        if (dest.x == 2) {
+            std::swap(board[0][dest.y], board[dest.x+1][dest.y]);
+        }
+        else {
+            std::swap(board[7][dest.y], board[dest.x-1][dest.y]);
+        }
+    }
+
     turn = (turn == 'w' ? 'b' : 'w');
 }
 
