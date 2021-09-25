@@ -26,11 +26,15 @@ class Board {
     bool request_move(MoveRequest move);
     void make_move(MoveRequest move);
     char promotion_prompt();
+    bool in_check();
     std::string piece_colour(sf::Vector2u square);
     sf::Vector2u en_passant_sq;
 
     private:
     std::vector<std::vector<Piece*> > board;
+    char turn;
+    void save_to_strings(std::vector<std::vector<std::string> > &strings);
+    void revert_from_strings(std::vector<std::vector<std::string> > &strings);
 };
 
 #endif
