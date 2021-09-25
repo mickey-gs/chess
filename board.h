@@ -13,6 +13,7 @@ class MoveRequest;
 
 #include <SFML/Graphics.hpp>
 #include <algorithm>
+#include <map>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -35,6 +36,8 @@ class Board {
     char turn;
     void save_to_strings(std::vector<std::vector<std::string> > &strings);
     void revert_from_strings(std::vector<std::vector<std::string> > &strings);
+    std::map<std::string, bool> castling_rights;
+    void make_fake_move(MoveRequest move);
 };
 
 #endif

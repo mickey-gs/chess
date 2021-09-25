@@ -22,6 +22,18 @@ void Board::display() {
         }
         std::cout << std::endl;
     }
+
+    std::cout << "Castling rights: " << std::endl;
+    std::cout << "White: " << "         " << "Black: " << std::endl;
+    std::cout << "Kingside: ";
+    std::cout << (castling_rights["wK"] ? "Yes" : "No ");
+    std::cout << "   ";
+    std::cout << (castling_rights["bK"] ? "Yes" : "No");
+    std::cout << std::endl;
+    std::cout << "Queenside: ";
+    std::cout << (castling_rights["wQ"] ? "Yes  " : "No   ");
+    std::cout << (castling_rights["bQ"] ? "Yes" : "No");
+    std::cout << std::endl;
 }
 
 sf::Vector2u Board::to_program_coords(char file, int rank) {
@@ -103,7 +115,7 @@ bool Board::request_move(MoveRequest move) {
             vec.clear();
         }
         save_to_strings(strings);
-        make_move(move);
+        make_fake_move(move);
         turn = (turn == 'b' ? 'w' : 'b');
         bool flag = !in_check();
 
@@ -113,6 +125,128 @@ bool Board::request_move(MoveRequest move) {
 }
 
 void Board::make_move(MoveRequest move) {
+    sf::Vector2u origin = move.origin;
+    sf::Vector2u dest = move.destination;
+
+    if (board[origin.x][origin.y]->name == "wp"
+    && (dest.y - origin.y == 2)) {
+        en_passant_sq = sf::Vector2u(dest.x, dest.y - 1);
+    }
+    if (board[origin.x][origin.y]->name == "bp"
+    && (origin.y - dest.y == 2)) {
+        en_passant_sq = sf::Vector2u(dest.x, dest.y + 1);
+    }
+
+    if (board[origin.x][origin.y]->name[1] == 'K') {
+        castling_rights[board[origin.x][origin.y]->name] = false;
+        castling_rights[std::string(1, turn) + "Q"] = false;
+    }
+    else if (board[origin.x][origin.y]->name[1] == 'R') {
+        if (origin.y == 0) {
+            if (origin.x == 0) {
+                castling_rights["wQ"] = false;
+            }
+            else if (origin.x == 7) {
+                castling_rights["wK"] = false;
+            }
+        }
+        else if (origin.y == 7) {
+            if (origin.x == 0) {
+                castling_rights["bQ"] = false;
+            }
+            else if (origin.x == 7) {
+                castling_rights["bK"] = false;
+            }
+        }
+    }
+
+    std::swap(board[origin.x][origin.y], board[dest.x][dest.y]);
+
+    if (board[dest.x][dest.y]->name[1] == 'p'
+    && dest.x - origin.x != 0
+    && board[origin.x][origin.y]->getColour() == "none") {
+        if (board[dest.x][dest.y]->name == "wp") {
+            delete board[dest.x][dest.y-1];
+            board[dest.x][dest.y-1] = new Empty();
+        }
+        else {
+            delete board[dest.x][dest.y+1];
+            board[dest.x][dest.y+1] = new Empty();
+        }
+    }
+
+    if (piece_colour(origin) != piece_colour(dest)) {
+        delete board[origin.x][origin.y];
+        board[origin.x][origin.y] = new Empty();
+    }
+
+    for (int file = 0; file != 8; file++) {
+        if (board[file][7]->name == "wp"
+        || board[file][0]->name == "bp") {
+            char piece = promotion_prompt();
+
+            switch (piece) {
+                case 'q':
+                if (board[file][7]->name == "wp") {
+                    delete board[file][7];
+                    board[file][7] = new Queen("w");
+                }
+                else {
+                    delete board[file][0];
+                    board[file][0] = new Queen("b");
+                }
+                break;
+
+                case 'r':
+                if (board[file][7]->name == "wp") {
+                    delete board[file][7];
+                    board[file][7] = new Rook("w");
+                }
+                else {
+                    delete board[file][0];
+                    board[file][0] = new Rook("b");
+                }
+                break;
+
+                case 'b':
+                if (board[file][7]->name == "wp") {
+                    delete board[file][7];
+                    board[file][7] = new Bishop("w");
+                }
+                else {
+                    delete board[file][0];
+                    board[file][0] = new Bishop("b");
+                }
+                break;
+
+                case 'n':
+                if (board[file][7]->name == "wp") {
+                    delete board[file][7];
+                    board[file][7] = new Knight("w");
+                }
+                else {
+                    delete board[file][0];
+                    board[file][0] = new Knight("b");
+                }
+                break;
+            }
+        }
+    }
+
+    if (board[dest.x][dest.y]->name != "wp"
+    && board[dest.x][dest.y]->name != "bp") {
+        en_passant_sq = sf::Vector2u(10, 10);
+    }
+
+    if (sf::Vector2u(dest.x, dest.y + 1) != en_passant_sq &&
+    sf::Vector2u(dest.x, dest.y - 1) != en_passant_sq) {
+        en_passant_sq = sf::Vector2u(10, 10);
+    }
+
+    turn = (turn == 'w' ? 'b' : 'w');
+}
+
+void Board::make_fake_move(MoveRequest move) {
     sf::Vector2u origin = move.origin;
     sf::Vector2u dest = move.destination;
 
@@ -212,6 +346,10 @@ void Board::make_move(MoveRequest move) {
 
 void Board::setup() {
     turn = 'w';
+    castling_rights["wQ"] = true;
+    castling_rights["wK"] = true;
+    castling_rights["bQ"] = true;
+    castling_rights["bK"] = true;
     std::vector<Piece*> buffer;
     for (int file = 0; file < 8; file++) {
         for (int rank = 0; rank < 8; rank++) {
