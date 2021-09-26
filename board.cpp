@@ -48,6 +48,10 @@ std::string Board::piece_colour(sf::Vector2u square) {
     return board[square.x][square.y]->getColour();
 }
 
+std::string Board::get_name(sf::Vector2u square) {
+    return board[square.x][square.y]->name;
+}
+
 bool Board::in_check() {
     std::vector<sf::Vector2u> total_moves;
     std::vector<sf::Vector2u> buffer;

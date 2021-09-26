@@ -29,8 +29,12 @@ class Board {
     char promotion_prompt();
     bool in_check();
     std::string piece_colour(sf::Vector2u square);
+    std::string get_name(sf::Vector2u square);
     sf::Vector2u en_passant_sq;
     std::map<std::string, bool> castling_rights;
+    char get_turn() {
+        return turn;
+    }
 
     private:
     std::vector<std::vector<Piece*> > board;

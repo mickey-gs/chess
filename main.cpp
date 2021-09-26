@@ -9,25 +9,8 @@ int main() {
     std::vector<std::vector<sf::RectangleShape> > squares;
     sf::Vector2u dims = win.getSize();
     std::vector<sf::RectangleShape> buffer;
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            sf::RectangleShape sh(sf::Vector2f(win.getSize().x/8, win.getSize().y/8));
-            sh.setPosition((dims.x / 8) * (j % 8), (dims.y / 8) * (7 - i));
-            if ((i+j) % 2 == 0) {
-                sh.setFillColor(sf::Color::Black);
-            }
-            else {
-                sh.setFillColor(sf::Color::White);
-            }
-            buffer.push_back(sh);
-        }
-        squares.push_back(buffer);
-    }
-    sf::RectangleShape white(sf::Vector2f(win.getSize().x/2, win.getSize().y/2));
-    white.setFillColor(sf::Color::White);
-    sf::RectangleShape black = white;
-    black.setFillColor(sf::Color::Blue);
-    win.clear(sf::Color::Black);
+    sf::Texture text;
+    text.loadFromFile("./assets/wood_grain.jpg");
     Board board;
     board.setup();
     board.display();
@@ -41,31 +24,78 @@ int main() {
             }
         }
 
-        for (int i = 0; i != squares.size(); i++) {
-            for (int j = 0; j != squares[i].size(); j++) {
-                win.draw(squares[i][j]);
+        sf::Texture piece_texture;
+        sf::RectangleShape piece;
+        for (int rank = 0; rank < 8; rank++) {
+            for (int file = 0; file < 8; file++) {
+                sf::RectangleShape sh(sf::Vector2f(win.getSize().x/8, win.getSize().y/8));
+                sh.setPosition((dims.x / 8) * (file % 8), dims.y - (dims.y / 8 * (rank + 1)));
+                if ((rank+file) % 2 == 0) {
+                    sh.setFillColor(sf::Color(140, 100, 100));
+                }
+                else {
+                    sh.setFillColor(sf::Color::White);
+                }
+                sh.setTexture(&text);
+                win.draw(sh);
+                std::string name = board.get_name(sf::Vector2u(file, rank));
+                if (name != "  ") {
+                    piece_texture.loadFromFile("./assets/" + name + ".png");
+                    piece.setTexture(&piece_texture);
+                    piece.setSize(sf::Vector2f(dims.x / 8, dims.y / 8));
+                    piece.setPosition(sf::Vector2f(
+                        (dims.x / 8) * (file % 8), dims.y - (dims.y / 8 * (rank + 1))));
+                    win.draw(piece);
+                }
             }
         }
         win.display();
 
-        // do {
-        //     char file_0, file_1;
-        //     int rank_0, rank_1;
+        sf::Vector2u origin(10, 10);
+        do {
+            sf::Event e;
+            while (win.pollEvent(e)) {
+                if (e.type == sf::Event::MouseButtonPressed) {
+                    if (e.mouseButton.button == sf::Mouse::Left) {
+                        sf::Vector2f pos(float(e.mouseButton.x), 
+                            float(e.mouseButton.y)); 
+                        pos.x = pos.x / dims.x * 8;
+                        pos.y = pos.y / dims.y * 8;
+                        if (0 <= pos.x && pos.x < 8 && 0 <= pos.y && pos.y < 8) {
+                            origin.x = pos.x;
+                            origin.y = pos.y;
+                            origin.y = 7 - origin.y;
+                        }
+                    }
+                }
+            }
+        } while (origin.x == 10 || board.piece_colour(origin) != std::string(1, board.get_turn()));
 
-        //     std::cout << "Origin square? ";
-        //     std::cin >> file_0 >> rank_0;
-        //     move.origin = Board::to_program_coords(file_0, rank_0);
+        sf::Vector2u dest(10, 10);
+        do {
+            sf::Event e;
+            while (win.pollEvent(e)) {
+                if (e.type == sf::Event::MouseButtonPressed) {
+                    if (e.mouseButton.button == sf::Mouse::Left) {
+                        sf::Vector2f pos(float(e.mouseButton.x), 
+                            float(e.mouseButton.y)); 
+                        pos.x = pos.x / dims.x * 8;
+                        pos.y = pos.y / dims.y * 8;
+                        if (0 <= pos.x && pos.x < 8 && 0 <= pos.y && pos.y < 8) {
+                            dest.x = pos.x;
+                            dest.y = pos.y;
+                            dest.y = 7 - dest.y;
+                        }
+                    }
+                }
+            }
+        } while (dest.x == 10 || board.piece_colour(dest) == std::string(1, board.get_turn()));
 
-        //     std::cout << "Destination square? ";
-        //     std::cin >> file_1 >> rank_1;
-        //     move.destination = Board::to_program_coords(file_1, rank_1);
-
-        //     if (board.request_move(move)) {
-        //         board.make_move(move);
-        //     }
-
-        //     board.display();
-        // } while (true);
+        move.origin = origin;
+        move.destination = dest;
+        if (board.request_move(move)) {
+            board.make_move(move);
+        }
     }
 
     return 0;
