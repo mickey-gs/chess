@@ -119,6 +119,38 @@ bool Board::request_move(MoveRequest move) {
             vec.clear();
         }
         save_to_strings(strings);
+
+        if (board[move.origin.x][move.origin.y]->name[1] == 'K' 
+        && (move.destination.x - move.origin.x > 1 || move.destination.x - move.origin.x > 1)) {
+            if (in_check()) {
+                return false;
+            }
+            if (move.destination.x > move.origin.x) {
+                MoveRequest half_castle;
+                half_castle.origin = move.origin;
+                half_castle.destination = move.destination;
+                half_castle.destination.x -= 1;
+                make_fake_move(half_castle);
+                turn = (turn == 'b' ? 'w' : 'b');
+                if (in_check()) {
+                    revert_from_strings(strings);
+                    return false;
+                }
+            }
+            else {
+                MoveRequest half_castle;
+                half_castle.origin = move.origin;
+                half_castle.destination = move.destination;
+                half_castle.destination.x += 1;
+                make_fake_move(half_castle);
+                turn = (turn == 'b' ? 'w' : 'b');
+                if (in_check()) {
+                    revert_from_strings(strings);
+                    return false;
+                }
+            }
+        }
+
         make_fake_move(move);
         turn = (turn == 'b' ? 'w' : 'b');
         bool flag = !in_check();

@@ -55,7 +55,7 @@ std::vector<sf::Vector2u> King::gen_moves(Board board, sf::Vector2u pos) {
         cursor.x++;
         if (board.castling_rights[colour + "K"]) {
             bool flag = true;
-            while (cursor.x < 6) {
+            while (cursor.x < 7) {
                 if (board.piece_colour(sf::Vector2u(cursor.x, cursor.y)) != "none") {
                     flag = false;
                     break;
