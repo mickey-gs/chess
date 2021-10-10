@@ -32,9 +32,11 @@ class Board {
     std::string get_name(sf::Vector2u square);
     sf::Vector2u en_passant_sq;
     std::map<std::string, bool> castling_rights;
+    std::string gen_fen();
     char get_turn() {
         return turn;
     }
+    bool in_checkmate();
 
     private:
     std::vector<std::vector<Piece*> > board;

@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <algorithm>
+#include <fstream>
 #include <stdexcept>
 #include "board.h"
 #include "moverequest.h"
@@ -95,6 +96,23 @@ int main() {
         move.destination = dest;
         if (board.request_move(move)) {
             board.make_move(move);
+        }
+
+        system(("ruby analyse.rb " + board.gen_fen()).c_str());
+
+        std::string line;
+        std::ifstream analysis("bestmove.txt");
+        analysis >> line;
+        if (line == "checkmate") {
+            std::cout << "Checkmate!" << std::endl;
+            break;
+        }
+        else if (line == "stalemate") {
+            std::cout << "Stalemate." << std::endl;
+            break;
+        }
+        else {
+            std::cout << "Best move: " << line << std::endl;
         }
     }
 

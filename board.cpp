@@ -500,3 +500,158 @@ void Board::revert_from_strings(std::vector<std::vector<std::string> > &strings)
         }
     }
 }
+
+std::string Board::gen_fen() {
+    std::string data;
+    for (int rank = 7; rank >= 0; rank--) {
+        int blanks = 0;
+        for (int file = 0; file < 8; file++) {
+            if (board[file][rank]->name[1] == 'K') {
+                if (blanks > 0) {
+                    data += std::to_string(blanks);
+                    blanks = 0;
+                }
+                if (board[file][rank]->name[0] == 'w') {
+                    data += "K";
+                }
+                else {
+                    data += "k";
+                }
+            }
+            else if (board[file][rank]->name[1] == 'Q') {
+                if (blanks > 0) {
+                    data += std::to_string(blanks);
+                    blanks = 0;
+                }
+                if (board[file][rank]->name[0] == 'w') {
+                    data += "Q";
+                }
+                else {
+                    data += "q";
+                }
+            }
+            else if (board[file][rank]->name[1] == 'R') {
+                if (blanks > 0) {
+                    data += std::to_string(blanks);
+                    blanks = 0;
+                }
+                if (board[file][rank]->name[0] == 'w') {
+                    data += "R";
+                }
+                else {
+                    data += "r";
+                }
+            }
+            else if (board[file][rank]->name[1] == 'N') {
+                if (blanks > 0) {
+                    data += std::to_string(blanks);
+                    blanks = 0;
+                }
+                if (board[file][rank]->name[0] == 'w') {
+                    data += "N";
+                }
+                else {
+                    data += "n";
+                }
+            }
+            else if (board[file][rank]->name[1] == 'B') {
+                if (blanks > 0) {
+                    data += std::to_string(blanks);
+                    blanks = 0;
+                }
+                if (board[file][rank]->name[0] == 'w') {
+                    data += "B";
+                }
+                else {
+                    data += "b";
+                }
+            }
+            else if (board[file][rank]->name[1] == 'p') {
+                if (blanks > 0) {
+                    data += std::to_string(blanks);
+                    blanks = 0;
+                }
+                if (board[file][rank]->name[0] == 'w') {
+                    data += "P";
+                }
+                else {
+                    data += "p";
+                }
+            }
+            else {
+                blanks++;
+            }
+        }
+        if (blanks > 0) {
+            data += std::to_string(blanks);
+        }
+        
+        if (rank != 0) {
+            data += "/";
+        }
+    }
+
+    data += " " + std::string(1, turn);
+
+    data += " ";
+
+    bool flag = true;
+    if (castling_rights["wK"]) {
+        data += "K";
+        flag = false;
+    }
+    if (castling_rights["wQ"]) {
+        data += "Q";
+        flag = false;
+    }
+    if (castling_rights["bK"]) {
+        data += "k";
+        flag = false;
+    }
+    if (castling_rights["bQ"]) {
+        data += "q";  
+        flag = false;      
+    }
+    if (flag) {
+        data += "-";
+    }
+
+    data += " ";
+    if (en_passant_sq.x != 10) {
+        data += to_chess_coords(en_passant_sq);
+    }
+    else {
+        data += "-";
+    }
+
+    data += " 20 20";
+
+    return data;
+}
+
+// bool Board::in_checkmate() {
+//     std::vector<std::vector<std::string> > strings;
+//     save_to_strings(strings);
+//     for (int rank = 0; rank < 8; rank++) {
+//         for (int file = 0; file < 8; file++) {
+//             if (board[rank][file]->name[0] == turn) {
+//                 std::vector<sf::Vector2u> moves = board[rank][file]->gen_moves();
+//                 MoveRequest move;
+//                 move.origin = sf::Vector2u(rank, file);
+//                 for (int i = 0; i < moves.size(); i++) {
+//                     move.destination = sf::Vector2u(moves[i]);
+//                     make_fake_move(move);
+//                     if (!in_check()) {
+//                         turn = (turn == 'b' ? 'w' : 'b');
+//                         revert_from_strings(strings);
+//                         return false;
+//                     }
+//                     turn = (turn == 'b' ? 'w' : 'b');
+//                     revert_from_strings(strings);
+//                 }
+//             }
+//         }
+//     }
+
+//     return true;
+// }
