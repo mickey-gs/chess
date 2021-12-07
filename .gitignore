@@ -1,6 +1,9 @@
 .vscode/
+assets/pixel/
+cmds.txt
 token.txt
 compile.sh
 TODO.txt
 bestmove.txt
 main
+./main

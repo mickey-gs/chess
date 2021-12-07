@@ -1,18 +1,19 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
+#include <fstream>
 #include <iostream>
 #include "board.h"
-#include "piece.h"
-#include "bishop.h"
-#include "rook.h"
-#include "queen.h"
-#include "king.h"
-#include "wpawn.h"
-#include "bpawn.h"
-#include "knight.h"
-#include "empty.h"
-#include "moverequest.h"
+#include "../piece/piece.h"
+#include "../bishop/bishop.h"
+#include "../rook/rook.h"
+#include "../queen/queen.h"
+#include "../king/king.h"
+#include "../wpawn/wpawn.h"
+#include "../bpawn/bpawn.h"
+#include "../knight/knight.h"
+#include "../empty/empty.h"
+#include "../moverequest/moverequest.h"
 
 void Board::display() {
     std::cout << std::endl << std::endl;
@@ -629,29 +630,52 @@ std::string Board::gen_fen() {
     return data;
 }
 
-// bool Board::in_checkmate() {
-//     std::vector<std::vector<std::string> > strings;
-//     save_to_strings(strings);
-//     for (int rank = 0; rank < 8; rank++) {
-//         for (int file = 0; file < 8; file++) {
-//             if (board[rank][file]->name[0] == turn) {
-//                 std::vector<sf::Vector2u> moves = board[rank][file]->gen_moves();
-//                 MoveRequest move;
-//                 move.origin = sf::Vector2u(rank, file);
-//                 for (int i = 0; i < moves.size(); i++) {
-//                     move.destination = sf::Vector2u(moves[i]);
-//                     make_fake_move(move);
-//                     if (!in_check()) {
-//                         turn = (turn == 'b' ? 'w' : 'b');
-//                         revert_from_strings(strings);
-//                         return false;
-//                     }
-//                     turn = (turn == 'b' ? 'w' : 'b');
-//                     revert_from_strings(strings);
-//                 }
-//             }
-//         }
-//     }
+std::string exec(char* cmd) {
+    FILE* pipe = popen(cmd, "r");
+    if (!pipe) return "ERROR";
+        char buffer[1024];
+        std::string result = "";
+        while (fgets(buffer, 1024, pipe) != NULL) {
+          result += buffer;
+        }
+        pclose(pipe);
+        return result;
+}
 
-//     return true;
-// }
+bool Board::in_checkmate() {
+ //   turn = ('w' ? 'b' : 'w');
+    std::fstream file;
+    file.open("cmds.txt");
+    file << "position fen " << gen_fen() << "\n" << "go" << std::endl;
+    std::string analysis = exec("stockfish < cmds.txt");
+    // turn = ('w' ? 'b' : 'w');
+
+    // if (analysis.find("score mate 0") != std::string::npos) {
+    //     return true;
+    // }
+
+    // file.open("cmds.txt");
+    // file << "position fen " << gen_fen() << "\n" << "go" << std::endl;
+    // analysis = exec("stockfish < cmds.txt");
+
+    return (analysis.find("score mate 0") != std::string::npos);
+}
+
+char Board::get_colour(sf::Vector2u square) {
+    return board[square.x][square.y]->name[0];
+}
+
+
+std::vector<sf::Vector2u> Board::gen_moves(sf::Vector2u square) {
+    return board[square.x][square.y]->gen_moves();
+}
+
+bool Board::in_stalemate() {
+    std::fstream file;
+    file.open("cmds.txt");
+    file << "position fen " << gen_fen() << "\n" << "go" << std::endl;
+    std::string analysis = exec("stockfish < cmds.txt");
+    
+    return (analysis.find("score cp 0") != std::string::npos &&
+        analysis.find("bestmove (none)") != std::string::npos);
+}

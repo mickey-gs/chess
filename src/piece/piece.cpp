@@ -1,5 +1,5 @@
 #include "piece.h"
-#include "board.h"
+#include "../board/board.h"
 #include <string>
 #include <SFML/Graphics.hpp>
 

@@ -1,8 +1,8 @@
 #ifndef __BPAWN_H_INCLUDED__
 #define __BPAWN_H_INCLUDED__
 
-#include "piece.h"
-#include "board.h"
+#include "../piece/piece.h"
+#include "../board/board.h"
 
 class BPawn: public Piece {
     public:

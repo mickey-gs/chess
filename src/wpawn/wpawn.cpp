@@ -1,5 +1,5 @@
 #include "wpawn.h"
-#include "board.h"
+#include "../board/board.h"
 
 WPawn::WPawn() {
     colour = "w";

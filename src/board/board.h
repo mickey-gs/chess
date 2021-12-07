@@ -36,7 +36,10 @@ class Board {
     char get_turn() {
         return turn;
     }
+    char get_colour(sf::Vector2u square);
+    std::vector<sf::Vector2u> gen_moves(sf::Vector2u square);
     bool in_checkmate();
+    bool in_stalemate();
 
     private:
     std::vector<std::vector<Piece*> > board;

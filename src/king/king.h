@@ -1,8 +1,8 @@
 #ifndef __KING_H_INCLUDED__
 #define __KING_H_INCLUDED__
 
-#include "piece.h"
-#include "board.h"
+#include "../piece/piece.h"
+#include "../board/board.h"
 
 class King: public Piece {
     public:

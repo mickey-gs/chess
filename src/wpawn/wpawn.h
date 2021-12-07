@@ -1,8 +1,8 @@
 #ifndef __WPAWN_H_INCLUDED__
 #define __WPAWN_H_INCLUDED__
 
-#include "piece.h"
-#include "board.h"
+#include "../piece/piece.h"
+#include "../board/board.h"
 
 class WPawn: public Piece {
     public:
