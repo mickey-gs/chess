@@ -99,11 +99,6 @@ bool Board::request_move(MoveRequest move) {
     std::vector<sf::Vector2u> moves = 
         board[origin.x][origin.y]->gen_moves(*this, origin);
 
-    std::cout << "list of all legal moves for piece:" << std::endl;
-    for (int i = 0; i != moves.size(); i++) {
-        std::cout << to_chess_coords(moves[i]) << std::endl;
-    }
-
     if (std::find(moves.begin(), moves.end(), move.destination) ==
     moves.end()) {
         return false;
@@ -647,7 +642,8 @@ bool Board::in_checkmate() {
     std::fstream file;
     file.open("cmds.txt");
     file << "position fen " << gen_fen() << "\n" << "go" << std::endl;
-    std::string analysis = exec("stockfish < cmds.txt");
+    char* command = "stockfish < cmds.txt";
+    std::string analysis = exec(command);
     // turn = ('w' ? 'b' : 'w');
 
     // if (analysis.find("score mate 0") != std::string::npos) {
@@ -674,7 +670,8 @@ bool Board::in_stalemate() {
     std::fstream file;
     file.open("cmds.txt");
     file << "position fen " << gen_fen() << "\n" << "go" << std::endl;
-    std::string analysis = exec("stockfish < cmds.txt");
+    char* command = "stockfish < cmds.txt";
+    std::string analysis = exec(command);
     
     return (analysis.find("score cp 0") != std::string::npos &&
         analysis.find("bestmove (none)") != std::string::npos);

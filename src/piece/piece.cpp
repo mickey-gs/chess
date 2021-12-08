@@ -9,11 +9,13 @@ Piece::Piece() {
 }
 
 std::vector<sf::Vector2u> Piece::gen_moves() {
-    
+    std::vector<sf::Vector2u> ret = {};
+    return ret;
 }
 
 std::vector<sf::Vector2u> Piece::gen_moves(Board board, sf::Vector2u pos) {
-    std::cout << "This shouldn't be called." << std::endl;
+    std::vector<sf::Vector2u> ret = {};
+    return ret;
 }
 
 Piece::Piece(int rank, int file) {
